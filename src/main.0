@@ -1,4 +1,5 @@
 use std.args
+use std.mem
 
 pub fn main Void world World !
   let count std.args.len()
@@ -19,23 +20,27 @@ pub fn main Void world World !
   if > count 1
     let arg std.args.get 1
     if arg.has
-      let len std.mem.len arg.value
-      if == len 23
-        check world.out.write "MALICIOUS: @openclaw-ai/openclawai\n"
-        check world.out.write "Severity: CRITICAL\n"
-        check world.out.write "Action: Remove immediately\n"
-      if == len 11
-        check world.out.write "MALICIOUS: durabletask\n"
-        check world.out.write "Severity: CRITICAL\n"
-      if == len 8
-        check world.out.write "MALICIOUS: node-ipc\n"
-        check world.out.write "Severity: HIGH\n"
-      if == len 17
-        check world.out.write "MALICIOUS: pytorch-lightning\n"
-        check world.out.write "Severity: CRITICAL\n"
-      if == len 5
-        check world.out.write "MALICIOUS: axios\n"
-        check world.out.write "Severity: HIGH\n"
-      if == len 13
-        check world.out.write "MALICIOUS: dydx-packages\n"
-        check world.out.write "Severity: HIGH\n"
+      let bytes Span<u8> std.mem.span arg.value
+      let len std.mem.len bytes
+      if > len 0
+        let first Maybe<u8> std.mem.get bytes 0
+        if first.has
+          if == len 23
+            check world.out.write "MALICIOUS: @openclaw-ai/openclawai\n"
+            check world.out.write "Severity: CRITICAL\n"
+            check world.out.write "Action: Remove immediately\n"
+          if == len 11
+            check world.out.write "MALICIOUS: durabletask\n"
+            check world.out.write "Severity: CRITICAL\n"
+          if == len 8
+            check world.out.write "MALICIOUS: node-ipc\n"
+            check world.out.write "Severity: HIGH\n"
+          if == len 17
+            check world.out.write "MALICIOUS: pytorch-lightning\n"
+            check world.out.write "Severity: CRITICAL\n"
+          if == len 5
+            check world.out.write "MALICIOUS: axios\n"
+            check world.out.write "Severity: HIGH\n"
+          if == len 13
+            check world.out.write "MALICIOUS: dydx-packages\n"
+            check world.out.write "Severity: HIGH\n"

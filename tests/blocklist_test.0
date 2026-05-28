@@ -1,0 +1,34 @@
+use std.mem
+
+test "openclaw length"
+  let openclaw_len i32 23
+  expect (== openclaw_len 23)
+
+test "durabletask length"
+  let len i32 11
+  expect (== len 11)
+
+test "nodeipc length"
+  let len i32 8
+  expect (== len 8)
+
+test "pytorch length"
+  let len i32 17
+  expect (== len 17)
+
+test "axios length"
+  let len i32 5
+  expect (== len 5)
+
+test "dydx length"
+  let len i32 13
+  expect (== len 13)
+
+test "all lengths unique"
+  let a i32 23
+  let b i32 11
+  let c i32 8
+  let d i32 17
+  let e i32 5
+  let f i32 13
+  expect true

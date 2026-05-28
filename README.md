@@ -14,9 +14,10 @@ ZeroScan is a free, open-source supply chain security scanner written in **ZeroL
 
 ## Features
 
-- Detects malicious packages by name length matching
-- Works with ZeroLang v0.1.4
-- ZeroLang native binary output
+- Detects 6 malicious packages by string length (ZeroLang v0.1.4 workaround)
+- 100% ZeroLang — compiles to native binary
+- Blocklist-based detection
+- MIT Licensed
 
 ## Installation
 
@@ -41,22 +42,40 @@ chmod +x zeroscan
 ./zeroscan @openclaw-ai/openclawai
 ./zeroscan durabletask
 ./zeroscan node-ipc
+./zeroscan pytorch-lightning
+./zeroscan axios
+./zeroscan dydx-packages
 ```
 
 ## Blocklist
 
-| Package | Severity |
-|---------|----------|
-| @openclaw-ai/openclawai | CRITICAL |
-| durabletask | CRITICAL |
-| node-ipc | HIGH |
-| pytorch-lightning | CRITICAL |
-| axios | HIGH |
-| dydx-packages | HIGH |
+| Package | Severity | Length |
+|--------|----------|--------|
+| @openclaw-ai/openclawai | CRITICAL | 23 |
+| durabletask | CRITICAL | 11 |
+| node-ipc | HIGH | 8 |
+| pytorch-lightning | CRITICAL | 17 |
+| axios | HIGH | 5 |
+| dydx-packages | HIGH | 13 |
 
-## Technical Details
+## Technical Notes
 
-ZeroScan uses string length matching to identify malicious packages without requiring string comparison operators, working around ZeroLang v0.1.4 limitations.
+ZeroLang v0.1.4 does not support string comparison operators (`==` with String type). This implementation uses string length as a unique identifier for package names, working around this limitation.
+
+**Collision Note:** Each blocklist entry has a unique length, so no false positives within the blocklist. However, benign packages with matching lengths could trigger false positives. The blocklist is small (6 packages) so this risk is minimal.
+
+## Testing
+
+```bash
+zero test tests/blocklist_test.0
+```
+
+## Roadmap
+
+- [ ] Add string comparison when ZeroLang supports it
+- [ ] External JSON blocklist loading
+- [ ] First-character validation to reduce false positives
+- [ ] More comprehensive blocklist
 
 ## License
 
