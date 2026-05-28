@@ -1,5 +1,3 @@
-use lib
-
 pub fn main Void world World !
   check world.out.write "ZeroScan v0.1.0\n"
   check world.out.write "Supply Chain Security Scanner\n"
