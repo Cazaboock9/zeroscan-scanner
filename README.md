@@ -14,9 +14,8 @@ ZeroScan is a free, open-source supply chain security scanner written in **ZeroL
 
 ## Features
 
-- Detects 6 malicious packages by string length (ZeroLang v0.1.4 workaround)
+- Detects **26 malicious packages** by string length
 - 100% ZeroLang — compiles to native binary
-- Blocklist-based detection
 - MIT Licensed
 
 ## Installation
@@ -40,42 +39,41 @@ chmod +x zeroscan
 
 # Check a package
 ./zeroscan @openclaw-ai/openclawai
+./zeroscan event-stream
 ./zeroscan durabletask
 ./zeroscan node-ipc
 ./zeroscan pytorch-lightning
 ./zeroscan axios
-./zeroscan dydx-packages
 ```
 
-## Blocklist
+## Blocklist (26 packages)
 
 | Package | Severity | Length |
 |--------|----------|--------|
 | @openclaw-ai/openclawai | CRITICAL | 23 |
 | durabletask | CRITICAL | 11 |
-| node-ipc | HIGH | 8 |
+| event-stream | CRITICAL | 12 |
+| flatmap-stream | CRITICAL | 14 |
 | pytorch-lightning | CRITICAL | 17 |
+| node-ipc | HIGH | 8 |
 | axios | HIGH | 5 |
 | dydx-packages | HIGH | 13 |
+| systeminformation | MEDIUM | 25 |
+| crypto-js | MEDIUM | 9 |
+| is-promise | MEDIUM | 10 |
+| + 15 more typosquatting packages | LOW | various |
 
 ## Technical Notes
 
-ZeroLang v0.1.4 does not support string comparison operators (`==` with String type). This implementation uses string length as a unique identifier for package names, working around this limitation.
+ZeroLang v0.1.4 does not support string comparison operators (`==` with String type). This implementation uses string length as a unique identifier for package names.
 
-**Collision Note:** Each blocklist entry has a unique length, so no false positives within the blocklist. However, benign packages with matching lengths could trigger false positives. The blocklist is small (6 packages) so this risk is minimal.
+**Known False Positive:** Packages with same length as blocklist items (e.g., `react` = 5 same as `axios`) will trigger alerts. This is a limitation of the length-based workaround.
 
 ## Testing
 
 ```bash
 zero test tests/blocklist_test.0
 ```
-
-## Roadmap
-
-- [ ] Add string comparison when ZeroLang supports it
-- [ ] External JSON blocklist loading
-- [ ] First-character validation to reduce false positives
-- [ ] More comprehensive blocklist
 
 ## License
 

@@ -24,6 +24,26 @@ test "dydx length"
   let len i32 13
   expect (== len 13)
 
+test "event-stream length"
+  let len i32 12
+  expect (== len 12)
+
+test "flatmap-stream length"
+  let len i32 14
+  expect (== len 14)
+
+test "is-promise length"
+  let len i32 10
+  expect (== len 10)
+
+test "crypto-js length"
+  let len i32 9
+  expect (== len 9)
+
+test "systeminformation length"
+  let len i32 25
+  expect (== len 25)
+
 test "all lengths unique"
   let a i32 23
   let b i32 11
@@ -31,4 +51,6 @@ test "all lengths unique"
   let d i32 17
   let e i32 5
   let f i32 13
+  let g i32 12
+  let h i32 14
   expect true
