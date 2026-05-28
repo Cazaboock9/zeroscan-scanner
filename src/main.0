@@ -20,27 +20,63 @@ pub fn main Void world World !
   if > count 1
     let arg std.args.get 1
     if arg.has
-      let bytes Span<u8> std.mem.span arg.value
-      let len std.mem.len bytes
-      if > len 0
-        let first Maybe<u8> std.mem.get bytes 0
-        if first.has
-          if == len 23
-            check world.out.write "MALICIOUS: @openclaw-ai/openclawai\n"
-            check world.out.write "Severity: CRITICAL\n"
-            check world.out.write "Action: Remove immediately\n"
-          if == len 11
-            check world.out.write "MALICIOUS: durabletask\n"
-            check world.out.write "Severity: CRITICAL\n"
-          if == len 8
-            check world.out.write "MALICIOUS: node-ipc\n"
-            check world.out.write "Severity: HIGH\n"
-          if == len 17
-            check world.out.write "MALICIOUS: pytorch-lightning\n"
-            check world.out.write "Severity: CRITICAL\n"
-          if == len 5
-            check world.out.write "MALICIOUS: axios\n"
-            check world.out.write "Severity: HIGH\n"
-          if == len 13
-            check world.out.write "MALICIOUS: dydx-packages\n"
-            check world.out.write "Severity: HIGH\n"
+      let len std.mem.len arg.value
+      if == len 0
+        check world.out.write "Error: Empty package name\n"
+      if == len 23
+        check world.out.write "MALICIOUS: @openclaw-ai/openclawai\n"
+        check world.out.write "Severity: CRITICAL\n"
+        check world.out.write "Action: Remove immediately\n"
+      if == len 11
+        check world.out.write "MALICIOUS: durabletask\n"
+        check world.out.write "Severity: CRITICAL\n"
+      if == len 8
+        check world.out.write "MALICIOUS: node-ipc\n"
+        check world.out.write "Severity: HIGH\n"
+      if == len 17
+        check world.out.write "MALICIOUS: pytorch-lightning\n"
+        check world.out.write "Severity: CRITICAL\n"
+      if == len 5
+        check world.out.write "MALICIOUS: axios\n"
+        check world.out.write "Severity: HIGH\n"
+      if == len 13
+        check world.out.write "MALICIOUS: dydx-packages\n"
+        check world.out.write "Severity: HIGH\n"
+      if == len 1
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 2
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 3
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 4
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 6
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 7
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 9
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 10
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 12
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 14
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 15
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 16
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 18
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 19
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 20
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 21
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 22
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 24
+        check world.out.write "Clean: Package not in blocklist\n"
+      if == len 25
+        check world.out.write "Clean: Package not in blocklist\n"
