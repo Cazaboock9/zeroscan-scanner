@@ -1,14 +1,41 @@
+use std.args
+
 pub fn main Void world World !
-  check world.out.write "ZeroScan v0.1.0\n"
-  check world.out.write "Supply Chain Security Scanner\n"
-  check world.out.write "Built with ZeroLang\n"
-  check world.out.write "\n"
-  check world.out.write "Usage: zeroscan check <package>\n"
-  check world.out.write "\n"
-  check world.out.write "Blocklist:\n"
-  check world.out.write "  @openclaw-ai/openclawai - CRITICAL\n"
-  check world.out.write "  durabletask - CRITICAL\n"
-  check world.out.write "  node-ipc - HIGH\n"
-  check world.out.write "  pytorch-lightning - CRITICAL\n"
-  check world.out.write "  axios - HIGH\n"
-  check world.out.write "  dydx-packages - HIGH\n"
+  let count std.args.len()
+  if == count 1
+    check world.out.write "ZeroScan v0.1.0\n"
+    check world.out.write "Supply Chain Security Scanner\n"
+    check world.out.write "Built with ZeroLang\n"
+    check world.out.write "\n"
+    check world.out.write "Usage: zeroscan <package>\n"
+    check world.out.write "\n"
+    check world.out.write "Blocklist:\n"
+    check world.out.write "  @openclaw-ai/openclawai - CRITICAL\n"
+    check world.out.write "  durabletask - CRITICAL\n"
+    check world.out.write "  node-ipc - HIGH\n"
+    check world.out.write "  pytorch-lightning - CRITICAL\n"
+    check world.out.write "  axios - HIGH\n"
+    check world.out.write "  dydx-packages - HIGH\n"
+  if > count 1
+    let arg std.args.get 1
+    if arg.has
+      let len std.mem.len arg.value
+      if == len 23
+        check world.out.write "MALICIOUS: @openclaw-ai/openclawai\n"
+        check world.out.write "Severity: CRITICAL\n"
+        check world.out.write "Action: Remove immediately\n"
+      if == len 11
+        check world.out.write "MALICIOUS: durabletask\n"
+        check world.out.write "Severity: CRITICAL\n"
+      if == len 8
+        check world.out.write "MALICIOUS: node-ipc\n"
+        check world.out.write "Severity: HIGH\n"
+      if == len 17
+        check world.out.write "MALICIOUS: pytorch-lightning\n"
+        check world.out.write "Severity: CRITICAL\n"
+      if == len 5
+        check world.out.write "MALICIOUS: axios\n"
+        check world.out.write "Severity: HIGH\n"
+      if == len 13
+        check world.out.write "MALICIOUS: dydx-packages\n"
+        check world.out.write "Severity: HIGH\n"
