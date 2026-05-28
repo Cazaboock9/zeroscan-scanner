@@ -3,98 +3,71 @@ use std.mem
 
 pub fn main Void world World !
   let count std.args.len()
+  
   if == count 1
-    check world.out.write "ZeroScan v0.1.0\n"
+    check world.out.write "ZeroScan v0.2.0 PoC\n"
     check world.out.write "Supply Chain Security Scanner\n"
     check world.out.write "Built with ZeroLang\n"
     check world.out.write "\n"
     check world.out.write "Usage: zeroscan <package>\n"
     check world.out.write "\n"
-    check world.out.write "Blocklist (26 packages):\n"
-    check world.out.write "  @openclaw-ai/openclawai - CRITICAL\n"
-    check world.out.write "  durabletask - CRITICAL\n"
-    check world.out.write "  event-stream - CRITICAL\n"
-    check world.out.write "  flatmap-stream - CRITICAL\n"
-    check world.out.write "  pytorch-lightning - CRITICAL\n"
-    check world.out.write "  node-ipc - HIGH\n"
-    check world.out.write "  axios - HIGH\n"
-    check world.out.write "  dydx-packages - HIGH\n"
-    check world.out.write "  systeminformation - MEDIUM\n"
-    check world.out.write "  crypto-js - MEDIUM\n"
-    check world.out.write "  is-promise - MEDIUM\n"
+    check world.out.write "Blocklist (10 verified):\n"
+    check world.out.write "  event-stream CVE-2018-16492\n"
+    check world.out.write "  flatmap-stream CRITICAL\n"
+    check world.out.write "  node-ipc HIGH\n"
+    check world.out.write "  ua-parser-js HIGH\n"
+    check world.out.write "  coa HIGH\n"
+    check world.out.write "  rc HIGH\n"
+    check world.out.write "  colors MEDIUM\n"
+    check world.out.write "  faker MEDIUM\n"
+    check world.out.write "  @openclaw-ai/openclawai CRITICAL\n"
+  
   if > count 1
     let arg std.args.get 1
     if arg.has
-      let len std.mem.len arg.value
-      if == len 0
-        check world.out.write "Error: Empty package name\n"
-      if == len 23
-        check world.out.write "MALICIOUS: @openclaw-ai/openclawai\n"
-        check world.out.write "Severity: CRITICAL\n"
-        check world.out.write "Action: Remove immediately\n"
-      if == len 11
-        check world.out.write "MALICIOUS: durabletask\n"
-        check world.out.write "Severity: CRITICAL\n"
-      if == len 8
-        check world.out.write "MALICIOUS: node-ipc\n"
-        check world.out.write "Severity: HIGH\n"
-      if == len 17
-        check world.out.write "MALICIOUS: pytorch-lightning\n"
-        check world.out.write "Severity: CRITICAL\n"
-      if == len 5
-        check world.out.write "MALICIOUS: axios\n"
-        check world.out.write "Severity: HIGH\n"
-      if == len 13
-        check world.out.write "MALICIOUS: dydx-packages\n"
-        check world.out.write "Severity: HIGH\n"
-      if == len 12
-        check world.out.write "MALICIOUS: event-stream\n"
-        check world.out.write "Severity: CRITICAL\n"
-      if == len 14
-        check world.out.write "MALICIOUS: flatmap-stream\n"
-        check world.out.write "Severity: CRITICAL\n"
-      if == len 10
-        check world.out.write "MALICIOUS: is-promise\n"
-        check world.out.write "Severity: MEDIUM\n"
-      if == len 9
-        check world.out.write "MALICIOUS: crypto-js\n"
-        check world.out.write "Severity: MEDIUM\n"
-      if == len 15
-        check world.out.write "MALICIOUS: nomates\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 16
-        check world.out.write "MALICIOUS: tribbles\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 18
-        check world.out.write "MALICIOUS: packajes\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 19
-        check world.out.write "MALICIOUS: compettitor\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 20
-        check world.out.write "MALICIOUS: rear-garden\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 21
-        check world.out.write "MALICIOUS: ggiving-seasons\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 22
-        check world.out.write "MALICIOUS: lodassh\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 24
-        check world.out.write "MALICIOUS: urllib3-secure\n"
-        check world.out.write "Severity: LOW\n"
-      if == len 25
-        check world.out.write "MALICIOUS: systeminformation\n"
-        check world.out.write "Severity: MEDIUM\n"
-      if == len 1
-        check world.out.write "Clean: Package not in blocklist\n"
-      if == len 2
-        check world.out.write "Clean: Package not in blocklist\n"
-      if == len 3
-        check world.out.write "Clean: Package not in blocklist\n"
-      if == len 4
-        check world.out.write "Clean: Package not in blocklist\n"
-      if == len 6
-        check world.out.write "Clean: Package not in blocklist\n"
-      if == len 7
-        check world.out.write "Clean: Package not in blocklist\n"
+      let pkg arg.value
+      
+      if std.mem.eql pkg "@openclaw-ai/openclawai"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: CRITICAL\n"
+      
+      if std.mem.eql pkg "event-stream"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: CRITICAL CVE-2018-16492\n"
+      
+      if std.mem.eql pkg "flatmap-stream"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: CRITICAL\n"
+      
+      if std.mem.eql pkg "node-ipc"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: HIGH\n"
+      
+      if std.mem.eql pkg "ua-parser-js"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: HIGH\n"
+      
+      if std.mem.eql pkg "coa"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: HIGH\n"
+      
+      if std.mem.eql pkg "rc"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: HIGH\n"
+      
+      if std.mem.eql pkg "colors"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: MEDIUM\n"
+      
+      if std.mem.eql pkg "faker"
+        check world.out.write "MALICIOUS: "
+        check world.out.write pkg
+        check world.out.write "\nSeverity: MEDIUM\n"

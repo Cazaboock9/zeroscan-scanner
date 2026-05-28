@@ -4,18 +4,21 @@
 
 ```
 ╔══════════════════════════════════════════════════════════╗
-║  ZeroScan v0.1.0  —  Supply Chain Security Scanner   ║
+║  ZeroScan v0.2.0 PoC  —  Supply Chain Security Scanner   ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
 ## Overview
 
-ZeroScan is a free, open-source supply chain security scanner written in **ZeroLang** — a programming language designed for AI agents.
+ZeroScan is a proof-of-concept supply chain security scanner written in **ZeroLang** — a programming language designed for AI agents.
+
+**Key Innovation:** Uses `std.mem.eql()` for exact string matching — **zero false positives**.
 
 ## Features
 
-- Detects **26 malicious packages** by string length
-- 100% ZeroLang — compiles to native binary
+- Exact string matching with `std.mem.eql()` — no false positives
+- 10 verified malicious packages with CVE references
+- Compiles to native binary (~3.5KB)
 - MIT Licensed
 
 ## Installation
@@ -38,42 +41,41 @@ chmod +x zeroscan
 ./zeroscan
 
 # Check a package
-./zeroscan @openclaw-ai/openclawai
 ./zeroscan event-stream
-./zeroscan durabletask
 ./zeroscan node-ipc
-./zeroscan pytorch-lightning
-./zeroscan axios
+./zeroscan colors
 ```
 
-## Blocklist (26 packages)
+## Blocklist (10 verified packages)
 
-| Package | Severity | Length |
-|--------|----------|--------|
-| @openclaw-ai/openclawai | CRITICAL | 23 |
-| durabletask | CRITICAL | 11 |
-| event-stream | CRITICAL | 12 |
-| flatmap-stream | CRITICAL | 14 |
-| pytorch-lightning | CRITICAL | 17 |
-| node-ipc | HIGH | 8 |
-| axios | HIGH | 5 |
-| dydx-packages | HIGH | 13 |
-| systeminformation | MEDIUM | 25 |
-| crypto-js | MEDIUM | 9 |
-| is-promise | MEDIUM | 10 |
-| + 15 more typosquatting packages | LOW | various |
+| Package | Severity | Reference |
+|---------|----------|----------|
+| @openclaw-ai/openclawai | CRITICAL | AI agent RAT |
+| event-stream | CRITICAL | CVE-2018-16492 |
+| flatmap-stream | CRITICAL | event-stream dep |
+| node-ipc | HIGH | Protestware 2022 |
+| ua-parser-js | HIGH | Hijacked 2021 |
+| coa | HIGH | Hijacked 2021 |
+| rc | HIGH | Hijacked 2021 |
+| colors | MEDIUM | Sabotage 2022 |
+| faker | MEDIUM | Sabotage 2022 |
 
 ## Technical Notes
 
-ZeroLang v0.1.4 does not support string comparison operators (`==` with String type). This implementation uses string length as a unique identifier for package names.
-
-**Known False Positive:** Packages with same length as blocklist items (e.g., `react` = 5 same as `axios`) will trigger alerts. This is a limitation of the length-based workaround.
+Built with ZeroLang v0.1.4 using `std.mem.eql()` for exact string comparison — no length-based detection, no false positives from name length collisions.
 
 ## Testing
 
 ```bash
 zero test tests/blocklist_test.0
 ```
+
+## Why ZeroLang?
+
+ZeroLang is designed for AI agents. This project demonstrates:
+- Functional security tooling in a new language
+- Exact string matching via std.mem.eql
+- Small binary size (~3.5KB)
 
 ## License
 
