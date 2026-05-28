@@ -1,0 +1,16 @@
+use lib
+
+pub fn main Void world World !
+  check world.out.write "ZeroScan v0.1.0\n"
+  check world.out.write "Supply Chain Security Scanner\n"
+  check world.out.write "Built with ZeroLang\n"
+  check world.out.write "\n"
+  check world.out.write "Usage: zeroscan check <package>\n"
+  check world.out.write "\n"
+  check world.out.write "Blocklist:\n"
+  check world.out.write "  @openclaw-ai/openclawai - CRITICAL\n"
+  check world.out.write "  durabletask - CRITICAL\n"
+  check world.out.write "  node-ipc - HIGH\n"
+  check world.out.write "  pytorch-lightning - CRITICAL\n"
+  check world.out.write "  axios - HIGH\n"
+  check world.out.write "  dydx-packages - HIGH\n"
