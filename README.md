@@ -62,17 +62,41 @@ chmod +x zeroscan
 | colors | MEDIUM | Sabotage 2022 |
 | faker | MEDIUM | Sabotage 2022 |
 
-## Testing
+## Version History
 
-```bash
-zero test tests/blocklist_test.0
-```
-
-## v0.3.0 — Updates
-
+### v0.3.0 — Current (2026-05-29)
 - **Proper clean detection**: Unknown packages now show "CLEAN: package" instead of silent output
 - **Added axios blocklist entry**: Cross-platform RAT detection
 - **Uses v0.2.0 features**: `var found: Bool = false` mutable binding pattern
+
+### v0.2.0 — String Matching Revolution (2026-05-28)
+- **Rewrote with `std.mem.eql()`**: Exact string matching — zero false positives
+- **10 verified packages with CVE references**
+- **Fixed output**: Shows actual input package name, not blocklist name
+
+### v0.1.0 — Initial Proof of Concept
+- **Length-based detection**: Used `std.mem.len()` workaround
+- **Massive false positives**: react → axios collision
+- **Silent on clean packages**: No output for unknown packages
+
+## Limitations Overcome
+
+| Limitation (v0.1.4) | Solution (v0.2.0+) | Status |
+|---------------------|---------------------|--------|
+| No mutable variables | `var found: Bool = false` | ✅ Fixed |
+| Clean packages silent | `var found` tracking + CLEAN output | ✅ Fixed |
+| Length-based false positives | `std.mem.eql()` exact matching | ✅ Fixed |
+| No `else` chains | Separate `if` statements work | ✅ Fixed |
+
+## Current Limitations (Reported to ZeroLang Team)
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| `std.fs` gives BLD004 | Can't read local package.json | None yet |
+| `std.http` gives BLD004 | Can't query npm/PyPI APIs | None yet |
+| Backend requires C toolchain | Native exe needs cc linker | Use `zero build` defaults |
+
+**Note:** These are compiler/backend limitations, not language limitations. The ZeroLang team has been notified and is working on fixes.
 
 ## Why ZeroLang?
 
@@ -81,13 +105,12 @@ ZeroLang is designed for AI agents. This project demonstrates:
 - Exact string matching via std.mem.eql
 - Small binary size (~4.3KB)
 - Real-world constraints when building practical tools
+- Community-driven development with direct feedback to language team
 
-## History
+## Community
 
-- **v0.1.0**: Initial proof-of-concept with length-based detection
-- **v0.2.0**: Rewrote with `std.mem.eql()` for exact matching — fixed false positives
-- **v0.2.0+**: Discovered v0.2.0 features (`var`, `else`, `while`) enable proper clean package detection
-- **v0.3.0**: Full implementation with clean package output, axios added to blocklist
+- **ZeroLang Repository**: https://github.com/vercel-labs/zerolang
+- **ZeroScan Repository**: https://github.com/Cazaboock9/zeroscan-scanner
 
 ## License
 
