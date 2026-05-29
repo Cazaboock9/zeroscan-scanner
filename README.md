@@ -4,7 +4,7 @@
 
 ```
 ╔══════════════════════════════════════════════════════════╗
-║  ZeroScan v0.2.0 PoC  —  Supply Chain Security Scanner     ║
+║  ZeroScan v0.3.0 PoC  —  Supply Chain Security Scanner   ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
@@ -12,19 +12,20 @@
 
 ZeroScan is a proof-of-concept supply chain security scanner written in **ZeroLang** — a programming language designed for AI agents.
 
-**Key Innovation:** Uses `std.mem.eql()` for exact string matching — **zero false positives**.
+**Key Innovation:** Uses `std.mem.eql()` for exact string matching — **zero false positives**. Now with `var` mutable bindings and proper clean package detection in v0.2.0+.
 
 ## Features
 
 - Exact string matching with `std.mem.eql()` — no false positives
-- 10 verified malicious packages with CVE references
-- Compiles to native binary (~3.5KB)
+- Proper clean package detection (shows "CLEAN: package" for unknown packages)
+- 11 verified malicious packages with CVE references
+- Compiles to native binary (~4.3KB)
 - Open source under Apache License 2.0
 
 ## Installation
 
 ```bash
-# Install ZeroLang compiler
+# Install ZeroLang v0.2.0+ compiler
 curl -fsSL https://zerolang.ai/install.sh | bash
 
 # Clone and build
@@ -42,17 +43,18 @@ chmod +x zeroscan
 
 # Check a package
 ./zeroscan event-stream
-./zeroscan node-ipc
-./zeroscan colors
+./zeroscan axios
+./zeroscan react
 ```
 
-## Blocklist (10 verified packages)
+## Blocklist (11 verified packages)
 
 | Package | Severity | Reference |
 |---------|----------|-----------|
 | @openclaw-ai/openclawai | CRITICAL | AI agent RAT |
 | event-stream | CRITICAL | CVE-2018-16492 |
 | flatmap-stream | CRITICAL | event-stream dep |
+| axios | HIGH | Cross-platform RAT |
 | node-ipc | HIGH | Protestware 2022 |
 | ua-parser-js | HIGH | Hijacked 2021 |
 | coa | HIGH | Hijacked 2021 |
@@ -66,33 +68,26 @@ chmod +x zeroscan
 zero test tests/blocklist_test.0
 ```
 
-## ⚠️ LIMITATIONS
+## v0.3.0 — Updates
 
-**v0.1.4 Feedback — Help Wanted!**
-
-This PoC was built pushing ZeroLang v0.1.4 to its limits. Here's what we hit:
-
-| Limitation | Impact | Workaround |
-|------------|--------|------------|
-| No `mut` variables | Can't track if a package was already matched | Multiple `if` checks per package |
-| No `String` as function parameter | Can't extract helper functions | All logic in `main` |
-| No early `ret` in nested context | Clean packages produce no output | Silent for unknown packages |
-
-**The "Clean Package Silent" Issue:**
-
-When checking an unknown package (not in blocklist), ZeroScan produces **no output**. This is because without mutable variables or early returns in helper functions, we can't implement a `found` flag pattern.
-
-**Workaround:** If no match is found, the scanner stays silent. For a production tool, this would need `let mut found = false` or `ret` statements in helper functions.
-
-**These limitations are documented bugs for the ZeroLang team — not failures of the implementation.**
+- **Proper clean detection**: Unknown packages now show "CLEAN: package" instead of silent output
+- **Added axios blocklist entry**: Cross-platform RAT detection
+- **Uses v0.2.0 features**: `var found: Bool = false` mutable binding pattern
 
 ## Why ZeroLang?
 
 ZeroLang is designed for AI agents. This project demonstrates:
 - Functional security tooling in a new language
 - Exact string matching via std.mem.eql
-- Small binary size (~3.5KB)
+- Small binary size (~4.3KB)
 - Real-world constraints when building practical tools
+
+## History
+
+- **v0.1.0**: Initial proof-of-concept with length-based detection
+- **v0.2.0**: Rewrote with `std.mem.eql()` for exact matching — fixed false positives
+- **v0.2.0+**: Discovered v0.2.0 features (`var`, `else`, `while`) enable proper clean package detection
+- **v0.3.0**: Full implementation with clean package output, axios added to blocklist
 
 ## License
 

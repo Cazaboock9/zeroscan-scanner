@@ -1,73 +1,109 @@
 use std.args
 use std.mem
 
-pub fn main Void world World !
-  let count std.args.len()
-  
-  if == count 1
-    check world.out.write "ZeroScan v0.2.0 PoC\n"
-    check world.out.write "Supply Chain Security Scanner\n"
-    check world.out.write "Built with ZeroLang\n"
-    check world.out.write "\n"
-    check world.out.write "Usage: zeroscan <package>\n"
-    check world.out.write "\n"
-    check world.out.write "Blocklist (10 verified):\n"
-    check world.out.write "  event-stream CVE-2018-16492\n"
-    check world.out.write "  flatmap-stream CRITICAL\n"
-    check world.out.write "  node-ipc HIGH\n"
-    check world.out.write "  ua-parser-js HIGH\n"
-    check world.out.write "  coa HIGH\n"
-    check world.out.write "  rc HIGH\n"
-    check world.out.write "  colors MEDIUM\n"
-    check world.out.write "  faker MEDIUM\n"
-    check world.out.write "  @openclaw-ai/openclawai CRITICAL\n"
-  
-  if > count 1
-    let arg std.args.get 1
-    if arg.has
-      let pkg arg.value
-      
-      if std.mem.eql pkg "@openclaw-ai/openclawai"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: CRITICAL\n"
-      
-      if std.mem.eql pkg "event-stream"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: CRITICAL CVE-2018-16492\n"
-      
-      if std.mem.eql pkg "flatmap-stream"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: CRITICAL\n"
-      
-      if std.mem.eql pkg "node-ipc"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: HIGH\n"
-      
-      if std.mem.eql pkg "ua-parser-js"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: HIGH\n"
-      
-      if std.mem.eql pkg "coa"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: HIGH\n"
-      
-      if std.mem.eql pkg "rc"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: HIGH\n"
-      
-      if std.mem.eql pkg "colors"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: MEDIUM\n"
-      
-      if std.mem.eql pkg "faker"
-        check world.out.write "MALICIOUS: "
-        check world.out.write pkg
-        check world.out.write "\nSeverity: MEDIUM\n"
+pub fn main(world: World) -> Void raises {
+  let count: usize = std.args.len()
+
+  if count == 1 {
+    check world.out.write("ZeroScan v0.2.0 PoC\n")
+    check world.out.write("Supply Chain Security Scanner\n")
+    check world.out.write("Built with ZeroLang v0.2.0\n")
+    check world.out.write("\n")
+    check world.out.write("Usage: zeroscan <package>\n")
+    check world.out.write("\n")
+    check world.out.write("Blocklist (10 verified):\n")
+    check world.out.write("  @openclaw-ai/openclawai  CRITICAL\n")
+    check world.out.write("  event-stream             CRITICAL CVE-2018-16492\n")
+    check world.out.write("  flatmap-stream           CRITICAL\n")
+    check world.out.write("  node-ipc                 HIGH\n")
+    check world.out.write("  ua-parser-js             HIGH\n")
+    check world.out.write("  coa                      HIGH\n")
+    check world.out.write("  rc                       HIGH\n")
+    check world.out.write("  colors                   MEDIUM\n")
+    check world.out.write("  faker                    MEDIUM\n")
+    check world.out.write("  axios                    HIGH\n")
+  }
+
+  if count > 1 {
+    let arg: Maybe<String> = std.args.get(1)
+    if arg.has {
+      var found: Bool = false
+
+      if std.mem.eql(arg.value, "@openclaw-ai/openclawai") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: CRITICAL\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "event-stream") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: CRITICAL CVE-2018-16492\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "flatmap-stream") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: CRITICAL\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "node-ipc") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: HIGH\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "ua-parser-js") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: HIGH\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "coa") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: HIGH\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "rc") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: HIGH\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "colors") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: MEDIUM\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "faker") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: MEDIUM\n")
+        found = true
+      }
+
+      if std.mem.eql(arg.value, "axios") {
+        check world.out.write("MALICIOUS: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nSeverity: HIGH\n")
+        found = true
+      }
+
+      if found == false {
+        check world.out.write("CLEAN: ")
+        check world.out.write(arg.value)
+        check world.out.write("\nNot in blocklist.\n")
+      }
+    }
+  }
+}
