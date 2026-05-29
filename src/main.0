@@ -5,13 +5,13 @@ pub fn main(world: World) -> Void raises {
   let count: usize = std.args.len()
 
   if count == 1 {
-    check world.out.write("ZeroScan v0.2.0 PoC\n")
+    check world.out.write("ZeroScan v0.3.0 PoC\n")
     check world.out.write("Supply Chain Security Scanner\n")
     check world.out.write("Built with ZeroLang v0.2.0\n")
     check world.out.write("\n")
     check world.out.write("Usage: zeroscan <package>\n")
     check world.out.write("\n")
-    check world.out.write("Blocklist (10 verified):\n")
+    check world.out.write("Blocklist (11 verified):\n")
     check world.out.write("  @openclaw-ai/openclawai  CRITICAL\n")
     check world.out.write("  event-stream             CRITICAL CVE-2018-16492\n")
     check world.out.write("  flatmap-stream           CRITICAL\n")
