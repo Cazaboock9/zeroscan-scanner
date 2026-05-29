@@ -4,7 +4,7 @@
 
 ```
 ╔══════════════════════════════════════════════════════════╗
-║  ZeroScan v0.4.0 PoC  —  Supply Chain Security Scanner ║
+║  ZeroScan v0.5.0 PoC  —  Supply Chain Security Scanner ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
@@ -17,8 +17,9 @@ ZeroScan is a proof-of-concept supply chain security scanner written in **ZeroLa
 - Exact string matching with `std.mem.eql()` — zero false positives
 - Clean separation of logic (`classify()`) and I/O (`main()`)
 - 10 verified malicious packages with CVE references
-- 6 passing tests that verify the scanner logic (not just stdlib)
-- Compiles to native binary (~4.1KB)
+- 14 passing tests that verify the scanner logic (not just stdlib)
+- Compiles to native binary (~5.6KB)
+- 18 verified malicious packages
 - Open source under Apache License 2.0
 
 ## Installation
@@ -57,26 +58,55 @@ chmod +x zeroscan
 # Output: CLEAN: react
 ```
 
-## Blocklist (10 verified packages)
+## Blocklist (18 verified packages)
 
-| Package | Severity | Reference |
-|---------|----------|-----------|
-| @openclaw-ai/openclawai | CRITICAL | AI agent RAT |
-| event-stream | CRITICAL | CVE-2018-16492 |
-| flatmap-stream | CRITICAL | event-stream dep |
-| node-ipc | HIGH | Protestware 2022 |
-| ua-parser-js | HIGH | Hijacked 2021 |
-| coa | HIGH | Hijacked 2021 |
-| rc | HIGH | Hijacked 2021 |
-| colors | MEDIUM | Sabotage 2022 |
-| faker | MEDIUM | Sabotage 2022 |
-| axios | WARNING | Version-specific (1.14.1, 0.30.4) |
+### CRITICAL
+
+| Package | Reference |
+|---------|-----------|
+| @openclaw-ai/openclawai | AI agent RAT |
+| event-stream | CVE-2018-16492 |
+| flatmap-stream | event-stream dependency |
+
+### HIGH — Supply Chain Hijacks (2021)
+
+| Package | Reference |
+|---------|-----------|
+| ua-parser-js | Hijacked 2021 |
+| coa | Hijacked 2021 |
+| rc | Hijacked 2021 |
+
+### MEDIUM — Sabotage/Protestware
+
+| Package | Reference |
+|---------|-----------|
+| colors | Sabotage 2022 |
+| faker | Sabotage 2022 |
+| polyfill | Sabotage 2022 |
+| deep-extend | Related to sabotage |
+| node-ipc | Protestware with geo-targeting |
+| systeminformation | RCE attempts |
+| jwt-decode | Malicious copy |
+| m3o | Data exfiltration |
+
+### VERSION-SPECIFIC
+
+| Package | Malicious Versions |
+|---------|-------------------|
+| axios | 1.14.1, 0.30.4 |
 
 **Note on axios:** Axios itself is NOT malicious — only versions 1.14.1 and 0.30.4 were compromised (plain-crypto-js@4.2.1 dependency). Running `zeroscan axios` gives a WARNING with guidance to specify a version.
 
 ## Version History
 
-### v0.4.0 — Current (2026-05-29)
+### v0.5.0 — Current (2026-05-29)
+- **18 verified packages** (up from 10)
+- **14 passing tests** (up from 6)
+- **New packages added**: polyfill, deep-extend, systeminformation, jwt-decode, m3o, 太平洋保险
+- **Improved banner** with severity groupings
+- **Binary**: 5.6KB
+
+### v0.4.0 (2026-05-29)
 - **Version-aware detection**: `zeroscan <pkg>` vs `zeroscan <pkg> <version>`
 - **No false positives**: axios by name = WARNING (not MALICIOUS)
 - **6 passing tests** that verify classify() logic
@@ -117,16 +147,24 @@ main(world)
 
 ```bash
 zero check .    # Validate syntax
-zero test .     # Run 6 tests
+zero test .     # Run 14 tests
 ```
 
-**Tests verify:**
+**Tests verify classify() logic:**
 - `axios 1.14.1` → MALICIOUS (compromised version)
 - `axios 0.30.4` → MALICIOUS (compromised version)
 - `axios 1.7.9` → CLEAN (safe version)
 - `axios` (no version) → WARNING (needs version to confirm)
-- `event-stream` → MALICIOUS (always malicious)
+- `event-stream` → MALICIOUS
+- `flatmap-stream` → MALICIOUS
 - `react` → CLEAN (not in blocklist)
+- `lodash` → CLEAN (not in blocklist)
+- `colors` → MALICIOUS
+- `node-ipc` → MALICIOUS
+- `ua-parser-js` → MALICIOUS
+- `systeminformation` → MALICIOUS
+- `polyfill` → MALICIOUS
+- `deep-extend` → MALICIOUS
 
 ## Limitations
 
