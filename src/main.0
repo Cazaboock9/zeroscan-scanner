@@ -1,6 +1,82 @@
 use std.args
 use std.mem
 
+fn check_package(pkg: String, world: World) -> Void raises {
+  if std.mem.eql(pkg, "@openclaw-ai/openclawai") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: CRITICAL\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "event-stream") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: CRITICAL CVE-2018-16492\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "flatmap-stream") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: CRITICAL\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "node-ipc") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: HIGH\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "ua-parser-js") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: HIGH\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "coa") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: HIGH\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "rc") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: HIGH\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "colors") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: MEDIUM\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "faker") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: MEDIUM\n")
+    return
+  }
+
+  if std.mem.eql(pkg, "axios") {
+    check world.out.write("MALICIOUS: ")
+    check world.out.write(pkg)
+    check world.out.write("\nSeverity: HIGH\n")
+    return
+  }
+
+  check world.out.write("CLEAN: ")
+  check world.out.write(pkg)
+  check world.out.write("\nNot in blocklist.\n")
+}
+
 pub fn main(world: World) -> Void raises {
   let count: usize = std.args.len()
 
@@ -27,83 +103,7 @@ pub fn main(world: World) -> Void raises {
   if count > 1 {
     let arg: Maybe<String> = std.args.get(1)
     if arg.has {
-      var found: Bool = false
-
-      if std.mem.eql(arg.value, "@openclaw-ai/openclawai") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: CRITICAL\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "event-stream") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: CRITICAL CVE-2018-16492\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "flatmap-stream") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: CRITICAL\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "node-ipc") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: HIGH\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "ua-parser-js") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: HIGH\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "coa") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: HIGH\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "rc") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: HIGH\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "colors") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: MEDIUM\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "faker") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: MEDIUM\n")
-        found = true
-      }
-
-      if std.mem.eql(arg.value, "axios") {
-        check world.out.write("MALICIOUS: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nSeverity: HIGH\n")
-        found = true
-      }
-
-      if found == false {
-        check world.out.write("CLEAN: ")
-        check world.out.write(arg.value)
-        check world.out.write("\nNot in blocklist.\n")
-      }
+      check check_package(arg.value, world)
     }
   }
 }
