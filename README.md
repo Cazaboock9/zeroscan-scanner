@@ -135,6 +135,32 @@ zero test .     # Run 6 tests
 | World as function parameter | BLD004 on direct backend | I/O stays in main() |
 | std.fs/std.http | Not available in direct backend | See future roadmap |
 
+### Why std.fs/std.http Are Not Available (Safety Facts)
+
+ZeroLang v0.2.0 exposes sandbox capabilities via `zero check --json`:
+
+```json
+{
+  "sandbox": {
+    "filesystem": "denied",
+    "network": "denied",
+    "ambientEnv": "denied",
+    "process": "denied"
+  },
+  "limits": {
+    "maxDepth": 64,
+    "maxSteps": 1024,
+    "stringBytes": 127
+  }
+}
+```
+
+**What this means:**
+- The direct backend denies filesystem access by default
+- Network access is also denied
+- These limits ensure safety but restrict I/O operations
+- When ZeroLang enables std.fs/std.http, linux-x64 WILL support them (it has the capability)
+
 ## Why ZeroLang?
 
 ZeroLang is designed for AI agents. This project demonstrates:
