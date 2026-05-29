@@ -1,109 +1,146 @@
 use std.args
 use std.mem
 
-fn check_package(pkg: String, world: World) -> Void raises {
-  if std.mem.eql(pkg, "@openclaw-ai/openclawai") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: CRITICAL\n")
-    return
-  }
+// classify() es el nucleo de decision puro del scanner. No toca World.
+fn classify(pkg: String, version: String, has_version: Bool) -> i32 {
+ if std.mem.eql(pkg, "axios") {
+ if has_version {
+ if std.mem.eql(version, "1.14.1") {
+ return 2
+ }
+ if std.mem.eql(version, "0.30.4") {
+ return 2
+ }
+ return 0
+ }
+ return 1
+ }
 
-  if std.mem.eql(pkg, "event-stream") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: CRITICAL CVE-2018-16492\n")
-    return
-  }
+ if std.mem.eql(pkg, "@openclaw-ai/openclawai") {
+ return 2
+ }
+ if std.mem.eql(pkg, "event-stream") {
+ return 2
+ }
+ if std.mem.eql(pkg, "flatmap-stream") {
+ return 2
+ }
+ if std.mem.eql(pkg, "node-ipc") {
+ return 2
+ }
+ if std.mem.eql(pkg, "ua-parser-js") {
+ return 2
+ }
+ if std.mem.eql(pkg, "coa") {
+ return 2
+ }
+ if std.mem.eql(pkg, "rc") {
+ return 2
+ }
+ if std.mem.eql(pkg, "colors") {
+ return 2
+ }
+ if std.mem.eql(pkg, "faker") {
+ return 2
+ }
 
-  if std.mem.eql(pkg, "flatmap-stream") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: CRITICAL\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "node-ipc") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: HIGH\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "ua-parser-js") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: HIGH\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "coa") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: HIGH\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "rc") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: HIGH\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "colors") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: MEDIUM\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "faker") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: MEDIUM\n")
-    return
-  }
-
-  if std.mem.eql(pkg, "axios") {
-    check world.out.write("MALICIOUS: ")
-    check world.out.write(pkg)
-    check world.out.write("\nSeverity: HIGH\n")
-    return
-  }
-
-  check world.out.write("CLEAN: ")
-  check world.out.write(pkg)
-  check world.out.write("\nNot in blocklist.\n")
+ return 0
 }
 
 pub fn main(world: World) -> Void raises {
-  let count: usize = std.args.len()
+ let count: usize = std.args.len()
 
-  if count == 1 {
-    check world.out.write("ZeroScan v0.3.0 PoC\n")
-    check world.out.write("Supply Chain Security Scanner\n")
-    check world.out.write("Built with ZeroLang v0.2.0\n")
-    check world.out.write("\n")
-    check world.out.write("Usage: zeroscan <package>\n")
-    check world.out.write("\n")
-    check world.out.write("Blocklist (11 verified):\n")
-    check world.out.write("  @openclaw-ai/openclawai  CRITICAL\n")
-    check world.out.write("  event-stream             CRITICAL CVE-2018-16492\n")
-    check world.out.write("  flatmap-stream           CRITICAL\n")
-    check world.out.write("  node-ipc                 HIGH\n")
-    check world.out.write("  ua-parser-js             HIGH\n")
-    check world.out.write("  coa                      HIGH\n")
-    check world.out.write("  rc                       HIGH\n")
-    check world.out.write("  colors                   MEDIUM\n")
-    check world.out.write("  faker                    MEDIUM\n")
-    check world.out.write("  axios                    HIGH\n")
-  }
+ if count == 1 {
+ check world.out.write("ZeroScan v0.4.0 PoC\n")
+ check world.out.write("Supply Chain Security Scanner\n")
+ check world.out.write("Built with ZeroLang\n")
+ check world.out.write("\n")
+ check world.out.write("Usage: zeroscan <package> [version]\n")
+ check world.out.write("\n")
+ check world.out.write("Blocklist (10 verified):\n")
+ check world.out.write(" @openclaw-ai/openclawai CRITICAL\n")
+ check world.out.write(" event-stream CRITICAL CVE-2018-16492\n")
+ check world.out.write(" flatmap-stream CRITICAL\n")
+ check world.out.write(" node-ipc HIGH\n")
+ check world.out.write(" ua-parser-js HIGH\n")
+ check world.out.write(" coa HIGH\n")
+ check world.out.write(" rc HIGH\n")
+ check world.out.write(" colors MEDIUM\n")
+ check world.out.write(" faker MEDIUM\n")
+ check world.out.write(" axios version-specific (1.14.1, 0.30.4)\n")
+ }
 
-  if count > 1 {
-    let arg: Maybe<String> = std.args.get(1)
-    if arg.has {
-      check check_package(arg.value, world)
-    }
-  }
+ if count > 1 {
+ let arg: Maybe<String> = std.args.get(1)
+ if arg.has {
+ let ver: Maybe<String> = std.args.get(2)
+
+ var pkg: String = arg.value
+ var version: String = ""
+ var has_version: Bool = false
+ if ver.has {
+ version = ver.value
+ has_version = true
+ }
+
+ let verdict: i32 = classify(pkg, version, has_version)
+
+ if verdict == 2 {
+ check world.out.write("MALICIOUS: ")
+ check world.out.write(pkg)
+ if has_version {
+ check world.out.write("@")
+ check world.out.write(version)
+ }
+ check world.out.write("\n")
+ }
+
+ if verdict == 1 {
+ check world.out.write("WARNING: ")
+ check world.out.write(pkg)
+ check world.out.write("\nCompromised only in versions 1.14.1 and 0.30.4.\n")
+ check world.out.write("Re-run with a version to check, e.g. zeroscan axios 1.14.1\n")
+ }
+
+ if verdict == 0 {
+ check world.out.write("CLEAN: ")
+ check world.out.write(pkg)
+ if has_version {
+ check world.out.write("@")
+ check world.out.write(version)
+ }
+ check world.out.write("\nNot in blocklist.\n")
+ }
+ }
+ }
+}
+
+test "axios_1_14_1_malicious" {
+ let r: i32 = classify("axios", "1.14.1", true)
+ expect (r == 2)
+}
+
+test "axios_0_30_4_malicious" {
+ let r: i32 = classify("axios", "0.30.4", true)
+ expect (r == 2)
+}
+
+test "axios_safe_version_clean" {
+ let r: i32 = classify("axios", "1.7.9", true)
+ expect (r == 0)
+}
+
+test "axios_name_only_warning" {
+ let r: i32 = classify("axios", "", false)
+ expect (r == 1)
+}
+
+test "event_stream_malicious" {
+ let r: i32 = classify("event-stream", "", false)
+ expect (r == 2)
+}
+
+test "react_clean" {
+ let r: i32 = classify("react", "", false)
+ expect (r == 0)
 }
