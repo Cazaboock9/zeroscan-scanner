@@ -164,27 +164,32 @@ This is a proof of concept. The detection model is an exact-name (and exact-vers
 | Blocklist-based | Only known packages are caught; novel/unknown malicious packages return CLEAN |
 | No install-script / dependency analysis | Does not inspect package contents, transitive deps, or install hooks |
 | World as function parameter | BLD004 on direct backend — I/O stays in main() |
-| std.fs / std.http | Not available in the current direct backend (see safety facts below) |
+| std.fs / std.http | Hosted target only (linux-x64); TAR002 on non-hosted targets |
 
 "No false positives" here means the exact-match approach will not misflag a package that isn't on the list — it does not mean comprehensive detection. A real scanner would add typosquat detection, version-range matching, and content analysis.
 
-### Why std.fs/std.http Are Not Available (Safety Facts)
+### std.fs / std.http — Target-Dependent, Not "Denied"
 
-ZeroLang v0.2.0 exposes sandbox capabilities via `zero check --json`:
+The `filesystem` and `network` "denied" in `zero check --json` refers to the **compile-time evaluator**, not the runtime of your compiled binary. The compile-time evaluator cannot access fs/network when evaluating constants — that's intentional for security during compilation.
+
+
+**Your binary at runtime is different.** On hosted targets (linux-x64), `std.fs` and `std.http` work. The ZeroLang repo itself has examples using them:
+
+```zero
+// examples/cli-file.0 — uses std.fs.writeBytes and std.fs.exists
+// std-path-io.0 — uses std.fs for file operations
+```
+
+The `zero check --json` output confirms linux-x64 has the capability:
 
 ```json
 {
-  "sandbox": {
-    "filesystem": "denied",
-    "network": "denied",
-    "ambientEnv": "denied",
-    "process": "denied"
-  },
-  "limits": { "maxDepth": 64, "maxSteps": 1024, "stringBytes": 127 }
+  "capabilities": ["memory", "stdio", "args", "env", "fs", "net", "proc", "time", "rand"]
 }
 ```
 
-When ZeroLang enables std.fs/std.http, linux-x64 reports the capability, so they should work on that target.
+
+**What this means for ZeroScan:** We chose not to use `std.fs`/`std.http` — not because they're forbidden, but because our current architecture (exact-match blocklist) doesn't need them. A future version could read blocklists from disk or fetch CVE data via HTTP.
 
 ## Why ZeroLang?
 
