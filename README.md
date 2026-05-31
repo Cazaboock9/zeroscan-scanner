@@ -16,7 +16,7 @@ ZeroScan is a proof-of-concept supply chain security scanner written in **ZeroLa
 - Version-aware detection (checks package + version when provided)
 - Exact string matching with `std.mem.eql()` — zero false positives
 - Clean separation of logic (`classify()`) and I/O (`main()`)
-- 10 verified malicious packages with CVE references
+- 18 verified malicious packages with CVE references
 - 14 passing tests that verify the scanner logic (not just stdlib)
 - Compiles to native binary (~5.6KB)
 - 18 verified malicious packages
