@@ -4,7 +4,7 @@
 
 ```
 ╔══════════════════════════════════════════════════════════╗
-║  ZeroScan v0.5.0 PoC  —  Supply Chain Security Scanner ║
+║ ZeroScan v0.5.0 PoC — Supply Chain Security Scanner ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
@@ -14,11 +14,11 @@ ZeroScan is a proof-of-concept supply chain security scanner written in **ZeroLa
 
 **Key Features:**
 - Version-aware detection (checks package + version when provided)
-- Exact string matching with `std.mem.eql()`
+- Exact-match blocklist via `std.mem.eql()` — no typosquat or version-range detection yet (see Limitations)
 - Clean separation of logic (`classify()`) and I/O (`main()`)
-- 11 verified malicious packages (10 by name + axios version-specific)
-- 15 passing tests that verify the scanner logic (not just stdlib)
-- Compiles to native binary (~4.4KB)
+- 10 known-malicious packages + 1 version-specific case (axios), all with references
+- 15 tests that verify the scanner logic itself (including negative cases), not just stdlib
+- Compiles to a native binary (~4.4KB)
 - Open source under Apache License 2.0
 
 ## Installation
@@ -42,7 +42,7 @@ chmod +x zeroscan
 
 # Check a package (name-only)
 ./zeroscan axios
-# Output: WARNING (not MALICIOUS — axios itself is safe, only specific versions are compromised)
+# Output: WARNING (axios itself is safe — only specific versions were compromised)
 
 # Check a package with version
 ./zeroscan axios 1.14.1
@@ -52,12 +52,12 @@ chmod +x zeroscan
 ./zeroscan axios 1.7.9
 # Output: CLEAN: axios@1.7.9
 
-# Check clean package
+# Check a clean package
 ./zeroscan react
 # Output: CLEAN: react
 ```
 
-## Blocklist (11 verified packages)
+## Blocklist (10 packages + 1 version-specific)
 
 ### CRITICAL
 
@@ -79,9 +79,9 @@ chmod +x zeroscan
 
 | Package | Reference |
 |---------|-----------|
-| colors | Sabotage 2022 |
-| faker | Sabotage 2022 |
-| node-ipc | Protestware with geo-targeting |
+| colors | Author sabotage 2022 |
+| faker | Author sabotage 2022 |
+| node-ipc | Protestware with geo-targeting 2022 |
 
 ### VERSION-SPECIFIC
 
@@ -89,54 +89,118 @@ chmod +x zeroscan
 |---------|-------------------|
 | axios | 1.14.1, 0.30.4 |
 
-**Note on axios:** Axios itself is NOT malicious — only versions 1.14.1 and 0.30.4 were compromised (plain-crypto-js@4.2.1 dependency). Running `zeroscan axios` gives a WARNING with guidance to specify a version.
+**Note on axios:** Axios itself is NOT malicious — only versions 1.14.1 and 0.30.4 were compromised (via the plain-crypto-js@4.2.1 dependency, March 2026). Running `zeroscan axios` returns a WARNING with guidance to specify a version.
 
 ## Version History
 
-### v0.5.0 — Current (2026-05-31)
-- **11 verified packages** (down from 18 — removed false positives)
-- **15 passing tests** (including negative tests for legitimate packages)
-- **False positives removed**: jwt-decode, systeminformation, polyfill, deep-extend, m3o
-- **Binary**: 4.4KB
+### v0.5.0 — Current (2026-05-30)
+- Reverted false positives introduced by an earlier blocklist expansion: `polyfill`, `deep-extend`, `systeminformation`, `jwt-decode`, `m3o` are legitimate packages and are no longer flagged by name
+- Added negative tests asserting those packages return CLEAN, to prevent regressions
+- Blocklist holds 10 known-malicious packages + the axios version-specific case
+- 15 tests total
 
 ### v0.4.0 (2026-05-29)
-- **Version-aware detection**: `zeroscan <pkg>` vs `zeroscan <pkg> <version>`
-- **No false positives**: axios by name = WARNING (not MALICIOUS)
-- **6 passing tests** that verify classify() logic
-- **Architecture**: pure `classify()` function + I/O in `main()`
+- Version-aware detection: `zeroscan <pkg>` vs `zeroscan <pkg> <version>`
+- axios by name = WARNING (not MALICIOUS)
+- Pure `classify()` function + I/O in `main()`
+- 6 tests verifying classify() logic
 
-### v0.3.0 — Clean detection (2026-05-29)
-- Proper CLEAN output for unknown packages
-- Uses `var found: Bool = false` mutable binding
+### v0.3.0 (2026-05-29)
+- CLEAN output for unknown packages
 
-### v0.2.0 — String matching (2026-05-28)
-- `std.mem.eql()` for exact string matching
+### v0.2.0 (2026-05-28)
+- `std.mem.eql()` exact string matching
+
+### v0.1.0 — Initial PoC
+- Length-based detection (deprecated)
 
 ## Architecture
 
 ```
-classify(package, version, has_version) → i32
-├── return 2  // MALICIOUS
-├── return 1  // WARNING (needs version)
-└── return 0  // CLEAN
+classify(pkg, version, has_version) -> i32
+├── 0 = CLEAN
+├── 1 = WARNING (needs version to determine)
+└── 2 = MALICIOUS
 
-main() → I/O only
+main(world)
 ├── Parse args
 ├── Call classify()
-└── Output result
+├── Print result based on verdict
+└── I/O stays in main() — World never passed as parameter
 ```
 
-**Key insight:** `classify()` is a pure function — no World parameter, no I/O. This avoids BLD004 entirely.
+**Why this architecture?**
+- `classify()` is pure logic — easy to test
+- `main()` handles all I/O — the World capability never leaks to helper functions
+- This pattern works around a ZeroLang v0.2.0 direct-backend limitation (World as a function parameter triggers BLD004)
+
+## Testing
+
+```bash
+zero check . # Validate syntax
+zero test . # Run 15 tests
+```
+
+Tests verify `classify()` logic, in both directions:
+
+**Should be flagged:**
+- `axios 1.14.1` → MALICIOUS (compromised version)
+- `axios 0.30.4` → MALICIOUS (compromised version)
+- `axios` (no version) → WARNING
+- `event-stream`, `flatmap-stream`, `ua-parser-js`, `colors`, `node-ipc` → MALICIOUS
+
+**Should NOT be flagged (negative tests):**
+- `axios 1.7.9` → CLEAN (safe version)
+- `react`, `lodash` → CLEAN (not in blocklist)
+- `jwt-decode`, `systeminformation`, `polyfill`, `deep-extend` → CLEAN (legitimate packages)
+
+## Limitations
+
+This is a proof of concept. The detection model is an exact-name (and exact-version) blocklist. That has real consequences:
+
+| Limitation | Impact |
+|------------|--------|
+| Exact-match only | No typosquatting detection (e.g. `event-strea`), no fuzzy matching, no version *ranges* — only the exact strings listed |
+| Blocklist-based | Only known packages are caught; novel/unknown malicious packages return CLEAN |
+| No install-script / dependency analysis | Does not inspect package contents, transitive deps, or install hooks |
+| World as function parameter | BLD004 on direct backend — I/O stays in main() |
+| std.fs / std.http | Not available in the current direct backend (see safety facts below) |
+
+"No false positives" here means the exact-match approach will not misflag a package that isn't on the list — it does not mean comprehensive detection. A real scanner would add typosquat detection, version-range matching, and content analysis.
+
+### Why std.fs/std.http Are Not Available (Safety Facts)
+
+ZeroLang v0.2.0 exposes sandbox capabilities via `zero check --json`:
+
+```json
+{
+  "sandbox": {
+    "filesystem": "denied",
+    "network": "denied",
+    "ambientEnv": "denied",
+    "process": "denied"
+  },
+  "limits": { "maxDepth": 64, "maxSteps": 1024, "stringBytes": 127 }
+}
+```
+
+When ZeroLang enables std.fs/std.http, linux-x64 reports the capability, so they should work on that target.
 
 ## Why ZeroLang?
 
-| Advantage | Explanation |
-|-----------|-------------|
-| Tiny binary | ~4KB compiled |
-| Agent-native | Designed for AI agent workflows |
-| Pure functions | No side effects, easy to test |
-| Graph introspection | `zero graph dump` for deep analysis |
+ZeroLang is designed for AI agents. This project explores:
+- Building functional tooling in a new, agent-native language
+- Exact string matching via std.mem.eql
+- Small native binary size
+- Real-world constraints when building practical tools on a pre-1.0 toolchain
+- Community feedback to the language team
 
 ## License
 
 Apache License 2.0
+
+---
+
+ZeroScan — A ZeroLang proof of concept for supply chain awareness
+
+Follow the author: https://x.com/dagomint
