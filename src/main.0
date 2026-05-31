@@ -51,29 +51,9 @@ fn classify(pkg: String, version: String, has_version: Bool) -> i32 {
  if std.mem.eql(pkg, "faker") {
      return 2
  }
- if std.mem.eql(pkg, "polyfill") {
-     return 2
- }
- if std.mem.eql(pkg, "deep-extend") {
-     return 2
- }
 
  // MEDIUM: Protestware with geo-targeting
  if std.mem.eql(pkg, "node-ipc") {
-     return 2
- }
-
- // MEDIUM: Known malicious packages
- if std.mem.eql(pkg, "systeminformation") {
-     return 2
- }
- if std.mem.eql(pkg, "jwt-decode") {
-     return 2
- }
- if std.mem.eql(pkg, "m3o") {
-     return 2
- }
- if std.mem.eql(pkg, "太平洋保险") {
      return 2
  }
 
@@ -91,7 +71,7 @@ pub fn main(world: World) -> Void raises {
      check world.out.write("\n")
      check world.out.write("Usage: zeroscan <package> [version]\n")
      check world.out.write("\n")
-     check world.out.write("Blocklist (18 verified):\n")
+     check world.out.write("Blocklist (12 verified):\n")
      check world.out.write("\n")
      check world.out.write("CRITICAL:\n")
      check world.out.write(" @openclaw-ai/openclawai  AI agent RAT\n")
@@ -104,12 +84,8 @@ pub fn main(world: World) -> Void raises {
      check world.out.write(" rc\n")
      check world.out.write("\n")
      check world.out.write("MEDIUM (sabotage/protestware):\n")
-     check world.out.write(" colors, faker, polyfill    Sabotage 2022\n")
+     check world.out.write(" colors, faker          Sabotage 2022\n")
      check world.out.write(" node-ipc               Protestware\n")
-     check world.out.write(" deep-extend            Related to sabotage\n")
-     check world.out.write(" systeminformation       RCE attempts\n")
-     check world.out.write(" jwt-decode             Malicious copy\n")
-     check world.out.write(" m3o                    Data exfiltration\n")
      check world.out.write("\n")
      check world.out.write("VERSION-SPECIFIC:\n")
      check world.out.write(" axios 1.14.1, 0.30.4  Compromise 2026-03\n")
@@ -216,20 +192,5 @@ test "node_ipc_malicious" {
 
 test "ua_parser_js_malicious" {
  let r: i32 = classify("ua-parser-js", "", false)
- expect (r == 2)
-}
-
-test "systeminformation_malicious" {
- let r: i32 = classify("systeminformation", "", false)
- expect (r == 2)
-}
-
-test "polyfill_malicious" {
- let r: i32 = classify("polyfill", "", false)
- expect (r == 2)
-}
-
-test "deep_extend_malicious" {
- let r: i32 = classify("deep-extend", "", false)
  expect (r == 2)
 }
