@@ -194,3 +194,25 @@ test "ua_parser_js_malicious" {
  let r: i32 = classify("ua-parser-js", "", false)
  expect (r == 2)
 }
+
+// === NEGATIVE TESTS — verify false positives are NOT in blocklist ===
+
+test "jwt_decode_clean" {
+ let r: i32 = classify("jwt-decode", "", false)
+ expect (r == 0)
+}
+
+test "systeminformation_clean" {
+ let r: i32 = classify("systeminformation", "", false)
+ expect (r == 0)
+}
+
+test "polyfill_clean" {
+ let r: i32 = classify("polyfill", "", false)
+ expect (r == 0)
+}
+
+test "deep_extend_clean" {
+ let r: i32 = classify("deep-extend", "", false)
+ expect (r == 0)
+}
