@@ -14,12 +14,11 @@ ZeroScan is a proof-of-concept supply chain security scanner written in **ZeroLa
 
 **Key Features:**
 - Version-aware detection (checks package + version when provided)
-- Exact string matching with `std.mem.eql()` — zero false positives
+- Exact string matching with `std.mem.eql()`
 - Clean separation of logic (`classify()`) and I/O (`main()`)
-- 18 verified malicious packages with CVE references
-- 14 passing tests that verify the scanner logic (not just stdlib)
-- Compiles to native binary (~5.6KB)
-- 18 verified malicious packages
+- 11 verified malicious packages (10 by name + axios version-specific)
+- 15 passing tests that verify the scanner logic (not just stdlib)
+- Compiles to native binary (~4.4KB)
 - Open source under Apache License 2.0
 
 ## Installation
@@ -58,7 +57,7 @@ chmod +x zeroscan
 # Output: CLEAN: react
 ```
 
-## Blocklist (18 verified packages)
+## Blocklist (11 verified packages)
 
 ### CRITICAL
 
@@ -82,12 +81,7 @@ chmod +x zeroscan
 |---------|-----------|
 | colors | Sabotage 2022 |
 | faker | Sabotage 2022 |
-| polyfill | Sabotage 2022 |
-| deep-extend | Related to sabotage |
 | node-ipc | Protestware with geo-targeting |
-| systeminformation | RCE attempts |
-| jwt-decode | Malicious copy |
-| m3o | Data exfiltration |
 
 ### VERSION-SPECIFIC
 
@@ -99,12 +93,11 @@ chmod +x zeroscan
 
 ## Version History
 
-### v0.5.0 — Current (2026-05-29)
-- **18 verified packages** (up from 10)
-- **14 passing tests** (up from 6)
-- **New packages added**: polyfill, deep-extend, systeminformation, jwt-decode, m3o, 太平洋保险
-- **Improved banner** with severity groupings
-- **Binary**: 5.6KB
+### v0.5.0 — Current (2026-05-31)
+- **11 verified packages** (down from 18 — removed false positives)
+- **15 passing tests** (including negative tests for legitimate packages)
+- **False positives removed**: jwt-decode, systeminformation, polyfill, deep-extend, m3o
+- **Binary**: 4.4KB
 
 ### v0.4.0 (2026-05-29)
 - **Version-aware detection**: `zeroscan <pkg>` vs `zeroscan <pkg> <version>`
@@ -118,102 +111,32 @@ chmod +x zeroscan
 
 ### v0.2.0 — String matching (2026-05-28)
 - `std.mem.eql()` for exact string matching
-- Zero false positives
-
-### v0.1.0 — Initial PoC
-- Length-based detection (deprecated)
 
 ## Architecture
 
 ```
-classify(pkg, version, has_version) -> i32
-├── 0 = CLEAN
-├── 1 = WARNING (needs version to determine)
-└── 2 = MALICIOUS
+classify(package, version, has_version) → i32
+├── return 2  // MALICIOUS
+├── return 1  // WARNING (needs version)
+└── return 0  // CLEAN
 
-main(world)
+main() → I/O only
 ├── Parse args
 ├── Call classify()
-├── Print result based on verdict
-└── I/O stays in main() — World never passed as parameter
+└── Output result
 ```
 
-**Why this architecture?**
-- `classify()` is pure logic — easy to test
-- `main()` handles all I/O — World capability never leaks to helper functions
-- This pattern works around ZeroLang v0.2.0 backend limitations
-
-## Testing
-
-```bash
-zero check .    # Validate syntax
-zero test .     # Run 14 tests
-```
-
-**Tests verify classify() logic:**
-- `axios 1.14.1` → MALICIOUS (compromised version)
-- `axios 0.30.4` → MALICIOUS (compromised version)
-- `axios 1.7.9` → CLEAN (safe version)
-- `axios` (no version) → WARNING (needs version to confirm)
-- `event-stream` → MALICIOUS
-- `flatmap-stream` → MALICIOUS
-- `react` → CLEAN (not in blocklist)
-- `lodash` → CLEAN (not in blocklist)
-- `colors` → MALICIOUS
-- `node-ipc` → MALICIOUS
-- `ua-parser-js` → MALICIOUS
-- `systeminformation` → MALICIOUS
-- `polyfill` → MALICIOUS
-- `deep-extend` → MALICIOUS
-
-## Limitations
-
-| Limitation | Impact | Workaround |
-|------------|--------|------------|
-| World as function parameter | BLD004 on direct backend | I/O stays in main() |
-| std.fs/std.http | Not available in direct backend | See future roadmap |
-
-### Why std.fs/std.http Are Not Available (Safety Facts)
-
-ZeroLang v0.2.0 exposes sandbox capabilities via `zero check --json`:
-
-```json
-{
-  "sandbox": {
-    "filesystem": "denied",
-    "network": "denied",
-    "ambientEnv": "denied",
-    "process": "denied"
-  },
-  "limits": {
-    "maxDepth": 64,
-    "maxSteps": 1024,
-    "stringBytes": 127
-  }
-}
-```
-
-**What this means:**
-- The direct backend denies filesystem access by default
-- Network access is also denied
-- These limits ensure safety but restrict I/O operations
-- When ZeroLang enables std.fs/std.http, linux-x64 WILL support them (it has the capability)
+**Key insight:** `classify()` is a pure function — no World parameter, no I/O. This avoids BLD004 entirely.
 
 ## Why ZeroLang?
 
-ZeroLang is designed for AI agents. This project demonstrates:
-- Functional security tooling in a new language
-- Exact string matching via std.mem.eql
-- Small binary size (~4.1KB)
-- Real-world constraints when building practical tools
-- Community-driven development with direct feedback to language team
+| Advantage | Explanation |
+|-----------|-------------|
+| Tiny binary | ~4KB compiled |
+| Agent-native | Designed for AI agent workflows |
+| Pure functions | No side effects, easy to test |
+| Graph introspection | `zero graph dump` for deep analysis |
 
 ## License
 
 Apache License 2.0
-
----
-
-**ZeroScan** — Protecting AI agents from supply chain threats
-
-Follow the author: https://x.com/dagomint
